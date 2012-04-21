@@ -3964,6 +3964,7 @@ static void zend_traits_init_trait_structures(zend_class_entry *ce TSRMLS_DC) /*
 		while ((cur_precedence = ce->trait_precedences[i])) {
 			/** Resolve classes for all precedence operations. */
 			if (cur_precedence->exclude_from_classes) {
+				cur_precedence->exclude_list_contains_strings = 0;
 				cur_method_ref = cur_precedence->trait_method;
 				cur_precedence->trait_method->ce = zend_fetch_class(cur_method_ref->class_name,
 																	cur_method_ref->cname_len, ZEND_FETCH_CLASS_TRAIT TSRMLS_CC);
@@ -4484,6 +4485,7 @@ void zend_prepare_trait_precedence(znode *result, znode *method_reference, znode
 
 	trait_precedence->trait_method = (zend_trait_method_reference*)method_reference->u.op.ptr;
 	trait_precedence->exclude_from_classes = (zend_class_entry**) trait_list->u.op.ptr;
+	trait_precedence->exclude_list_contains_strings = 1;
 
 	trait_precedence->function = NULL;
 

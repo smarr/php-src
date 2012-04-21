@@ -436,6 +436,7 @@ struct _zend_trait_precedence {
 	zend_trait_method_reference *trait_method;
 	
 	zend_class_entry** exclude_from_classes;
+	zend_bool exclude_list_contains_strings;
 	
 	union _zend_function* function;
 };

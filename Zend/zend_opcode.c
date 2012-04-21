@@ -214,12 +214,15 @@ ZEND_API int zend_cleanup_class_data(zend_class_entry **pce TSRMLS_DC)
 
 void _destroy_zend_class_traits_info(zend_class_entry *ce)
 {
+  size_t i;
+  size_t j;
+  
 	if (ce->num_traits > 0 && ce->traits) {
 		efree(ce->traits);
 	}
 	
 	if (ce->trait_aliases) {
-		size_t i = 0;
+		i = 0;
 		while (ce->trait_aliases[i]) {
 			if (ce->trait_aliases[i]->trait_method) {
 				if (ce->trait_aliases[i]->trait_method->method_name) {
@@ -243,7 +246,7 @@ void _destroy_zend_class_traits_info(zend_class_entry *ce)
 	}
 
 	if (ce->trait_precedences) {
-		size_t i = 0;
+		i = 0;
 		
 		while (ce->trait_precedences[i]) {
 			efree((char*)ce->trait_precedences[i]->trait_method->method_name);
@@ -251,6 +254,16 @@ void _destroy_zend_class_traits_info(zend_class_entry *ce)
 			efree(ce->trait_precedences[i]->trait_method);
 
 			if (ce->trait_precedences[i]->exclude_from_classes) {
+				/** this is only the case when a class definition was parsed
+				    but the execution never came to the opcodes binding the
+				    implementation */
+				if (ce->trait_precedences[i]->exclude_list_contains_strings) {
+					j = 0;
+					while (ce->trait_precedences[i]->exclude_from_classes[j]) {
+						str_efree(ce->trait_precedences[i]->exclude_from_classes[j]);
+						j++;
+					}
+				}
 				efree(ce->trait_precedences[i]->exclude_from_classes);
 			}
 
